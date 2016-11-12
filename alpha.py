@@ -52,10 +52,6 @@ en_y_dir = 0
 shoot = False
 player_loc_x = 0
 player_loc_y = 0
-time = 0
-time_cap = 800
-wave = 1
-enemy_spawn = 5
 gameend = False
 
 class backgroud(pygame.sprite.Sprite):
@@ -139,125 +135,7 @@ class Player(pygame.sprite.Sprite):
                 self.move(0,0)
             if event.key == pygame.K_DOWN:
                 self.move(0,0)
-
-
-class hitbox(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("hitbox.png").convert()
-        self.image.set_colorkey(WHITE)
-        pygame.draw.ellipse(self.image, YELLOW, [0,0, 7, 7])
-        self.rect = self.image.get_rect()
-
-    def update(self):
-        self.rect.x = player.rect.x+36
-        self.rect.y = player.rect.y+22
-
-class Bullet_left(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.Surface([width,height])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-    def update(self):
-        self.rect.x -= 4
-class Bullet_right(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.Surface([width,height])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-    def update(self):
-        self.rect.x += 4
-
-class Bullet_up(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.Surface([width,height])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-    def update(self):
-        self.rect.y += 4
-
-class Bullet_down(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.Surface([width,height])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-    def update(self):
-        self.rect.y -= 4
-
-class Bullet_topright(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.Surface([width,height])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-    def update(self):
-        self.rect.y -= 4
-        self.rect.x += 4
-
-class Bullet_bottomright(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.Surface([width,height])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-    def update(self):
-        self.rect.y += 4
-        self.rect.x += 4
-
-class Bullet_topleft(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.Surface([width,height])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-    def update(self):
-        self.rect.y -= 4
-        self.rect.x -= 4
-
-class Bullet_bottomleft(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.Surface([width,height])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-    def update(self):
-        self.rect.y += 4
-        self.rect.x -= 4
-
-class attackrange(pygame.sprite.Sprite):
-    def __init__(self,color,width,height,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface([width,height])
-        self.image.fill(color)
-        pygame.draw.ellipse(self.image, WHITE, [0,0, 240, 240])
-        self.image.set_colorkey(WHITE)
-        self.rect=self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        
-    def update(self):
-        self.rect.x = player.rect.x-103
-        self.rect.y = player.rect.y - 108
-
-player = Player()
-player_list = pygame.sprite.Group()
-player_list.add(player)
-allSprites.add(player)
-bullet_hit_list = pygame.sprite.Group()
-hitbox_list=pygame.sprite.Group()
-enemy_group=pygame.sprite.Group()
-hitbox = hitbox()
-hitbox_list.add(hitbox)
-allSprites.add(hitbox)
-
-
-
-
-
+              
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -288,6 +166,36 @@ class Enemy(pygame.sprite.Sprite):
         if self.rect.x<1 or self.rect.x>620:
             self.x_offset=self.x_offset*-1
         self.rect.x+=self.x_offset
+
+
+
+class hitbox(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("hitbox.png").convert()
+        self.image.set_colorkey(WHITE)
+        pygame.draw.ellipse(self.image, YELLOW, [0,0, 7, 7])
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        self.rect.x = player.rect.x+36
+        self.rect.y = player.rect.y+22
+
+player = Player()
+player_list = pygame.sprite.Group()
+player_list.add(player)
+allSprites.add(player)
+bullet_hit_list = pygame.sprite.Group()
+hitbox_list=pygame.sprite.Group()
+enemy_group=pygame.sprite.Group()
+hitbox = hitbox()
+hitbox_list.add(hitbox)
+allSprites.add(hitbox)
+
+
+
+
+
 
 
 
