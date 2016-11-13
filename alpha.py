@@ -27,7 +27,7 @@ allSprites = pygame.sprite.Group()
 # Set the width and height of the screen [width, height]
 size = (700, 900)
 screen = pygame.display.set_mode(size)
- 
+
 pygame.display.set_caption("alpha")
 
 #load backgroud
@@ -35,11 +35,13 @@ pygame.display.set_caption("alpha")
 x_speed = 0
 y_speed = 0
 
-x_coord = 450
-y_coord = 600
+x_coord = 300
+y_coord = 800
+
+radius=100
 
 x=random.randint(0,500)
-y= random.randint (0,400)
+y=random.randint(0,400)
 
 myscore = 0
 
@@ -53,32 +55,22 @@ shoot = False
 player_loc_x = 0
 player_loc_y = 0
 gameend = False
-
-class backgroud(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image= pygame.image.load("untitled.jpg").convert()
-        self.rect = self.image.get_rect()
-        self.rect.x =x_coord
-        self.rect.y =y_coord
-        self.x_speed = x_speed
-        self.y_speed = y_speed
-        
+       
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         
         #self.image=pygame.Surface([width,height])
         #self.image.fill(color)
-        self.image= pygame.image.load("raiden fighter.jpg").convert()
+        self.image= pygame.image.load("001.png").convert()
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.rect.x =x_coord
         self.rect.y =y_coord
         self.x_speed = x_speed
         self.y_speed = y_speed
-        self.direct = direct
-        self.pos = (self.rect.centerx,self.rect.centery)
+##      self.direct = direct
+##      self.pos = (self.rect.centerx,self.rect.centery)
         self.score = 0
         self.live = 10000
         #pygame.draw.ellipse(self.image, WHITE, [-28,-33, 90, 90])
@@ -104,24 +96,12 @@ class Player(pygame.sprite.Sprite):
         # adjust speed.
         if pressed[pygame.K_LEFT]:
             self.move(-2,0)
-            self.direct = 1
         if pressed[pygame.K_RIGHT]:
             self.move(2,0)
-            self.direct = 2
         if pressed[pygame.K_UP]:
             self.move(0,-2)
-            self.direct = 3
         if pressed[pygame.K_DOWN]:
             self.move(0,2)
-            self.direct = 4
-        if x_speed >0 and y_speed<0:
-            self.direct = 5
-        if x_speed >0 and y_speed>0:
-            self.direct = 6
-        if x_speed <0 and y_speed<0:
-            self.direct = 7
-        if x_speed <0 and y_speed>0:
-            self.direct = 8
 
 
         # User let up on a key
@@ -135,38 +115,6 @@ class Player(pygame.sprite.Sprite):
                 self.move(0,0)
             if event.key == pygame.K_DOWN:
                 self.move(0,0)
-              
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        
-        #self.image=pygame.Surface([width,height])
-        #self.image.fill(color)
-        self.image= pygame.image.load("raiden fighter.jpg").convert()
-        self.image.set_colorkey(WHITE)
-        self.rect = self.image.get_rect()
-        self.x_offset=-1
-        self.y_offset=-1
-        self.x_speed = x_speed
-        self.y_speed = y_speed
-        self.direct = direct
-        self.pos = (self.rect.centerx,self.rect.centery)
-        self.score = 0
-        self.live = 10000
-        #pygame.draw.ellipse(self.image, WHITE, [-28,-33, 90, 90])
-        #self.image.set_colorkey(WHITE)
-
-
-    
-    def update(self):
-        self.rect.y+=self.y_offset
-
-    def update_x(self):
-        
-        if self.rect.x<1 or self.rect.x>620:
-            self.x_offset=self.x_offset*-1
-        self.rect.x+=self.x_offset
-
 
 
 class hitbox(pygame.sprite.Sprite):
@@ -178,8 +126,32 @@ class hitbox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        self.rect.x = player.rect.x+36
-        self.rect.y = player.rect.y+22
+        self.rect.x = player.rect.x+26
+        self.rect.y = player.rect.y+20
+
+class Player_Bullet(pygame.sprite.Sprite):
+    def __init__(self,color,width,height,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image= pygame.Surface([width,height])
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+    def update(self):
+        self.rect.x -= 4
+
+class attackrange(pygame.sprite.Sprite):
+    def __init__(self,color,width,height,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([width,height])
+        self.image.fill(color)
+        pygame.draw.ellipse(self.image, WHITE, [0,0, 240, 240])
+        self.image.set_colorkey(WHITE)
+        self.rect=self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
+    def update(self):
+        self.rect.x = player.rect.x-103
+        self.rect.y = player.rect.y - 108
 
 player = Player()
 player_list = pygame.sprite.Group()
@@ -196,6 +168,55 @@ allSprites.add(hitbox)
 
 
 
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        
+        #self.image=pygame.Surface([width,height])
+        #self.image.fill(color)
+        self.image= pygame.image.load("001.png").convert()
+        self.image.set_colorkey(WHITE)
+        self.rect = self.image.get_rect()
+        self.x_offset=-1
+        self.y_offset=-1
+        self.direct = direct
+        self.pos = (self.rect.centerx,self.rect.centery)
+        self.score = 0
+        self.live = 10000
+        #pygame.draw.ellipse(self.image, WHITE, [-28,-33, 90, 90])
+        #self.image.set_colorkey(WHITE)
+
+##enemy go vertical up
+    def update(self):
+        self.rect.y+=self.y_offset
+
+##enemy moving like "Z"
+    def update_Z(self):
+        if self.rect.x<1 or self.rect.x>620:
+            self.x_offset=self.x_offset*-1
+        self.rect.x+=self.x_offset
+        self.rect.y+=self.y_offset
+##enemy moving in circle
+    def update_Circle(self):
+        self.rect.x = radius*math.cos(counter/30)+radius+x
+        self.rect.y = radius*math.sin(counter/30)+y
+        
+##enemy turns 180
+    def update_Turn180(self):
+        self.rect.y+=self.y_offset
+        if self.rect.y < 150:
+            self.rect.x = radius*math.cos(counter/30)+radius+x
+            self.rect.y = radius*math.sin(counter/30)+y
+            if self.rect.y ==150:
+                self.rect.y-=self.y_offset
+        
+        
+        
+        
+
+        
+        
+
 
 
 
@@ -206,8 +227,7 @@ allSprites.add(hitbox)
 ##    allSprites.add(enemy_object)
 ##    enemy_group.add(enemy_object)
 ##
-##for x in range(0,600):
-##    backgroud.rect.x+=1
+
 
 
 
@@ -267,25 +287,25 @@ while not done:
 
     if player.rect.x<1:
         player.rect.x=1
-    elif player.rect.x>675:
-        player.rect.x=675
+    elif player.rect.x>620:
+        player.rect.x=620
 
     if player.rect.y<1:
         player.rect.y=1
-    elif player.rect.y>875:
-        player.rect.y=875
+    elif player.rect.y>845:
+        player.rect.y=845
 
     # --- Screen-clearing code goes here
  
     # Here, we clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
-
+  
 
     counter+=1
     if counter%100==0:
         enemy_object=Enemy()
-        enemy_object.rect.x=500
-        enemy_object.rect.y=500
+        enemy_object.rect.x=250
+        enemy_object.rect.y=600
         allSprites.add(enemy_object)
         enemy_group.add(enemy_object)
     
@@ -298,7 +318,7 @@ while not done:
     allSprites.draw(screen)
     allSprites.update()
     for thing in enemy_group:
-        thing.update_x()
+        thing.update_Turn180()
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
  
