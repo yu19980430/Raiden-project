@@ -40,6 +40,8 @@ y_coord = 800
 
 radius=100
 
+angle = 0
+
 x=random.randint(0,500)
 y=random.randint(0,400)
 
@@ -150,7 +152,7 @@ class attackrange(pygame.sprite.Sprite):
         self.rect.y = y
         
     def update(self):
-        self.rect.x = player.rect.x-103
+        self.rect.x = player.rect.x - 103
         self.rect.y = player.rect.y - 108
 
 player = Player()
@@ -186,9 +188,9 @@ class Enemy(pygame.sprite.Sprite):
         #pygame.draw.ellipse(self.image, WHITE, [-28,-33, 90, 90])
         #self.image.set_colorkey(WHITE)
 
-##enemy go vertical up
-    def update(self):
-        self.rect.y+=self.y_offset
+####enemy go vertical up
+##    def update(self):
+##        self.rect.y+=self.y_offset
 
 ##enemy moving like "Z"
     def update_Z(self):
@@ -202,24 +204,14 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.y = radius*math.sin(counter/30)+y
         
 ##enemy turns 180
-    def update_Turn180(self):
+    def update_Turn180(self,angle):
         self.rect.y+=self.y_offset
-        if self.rect.y < 150:
-            self.rect.x = radius*math.cos(counter/30)+radius+x
-            self.rect.y = radius*math.sin(counter/30)+y
-            if self.rect.y ==150:
-                self.rect.y-=self.y_offset
-        
-        
-        
-        
-
-        
-        
-
-
-
-
+        if self.rect.y <= 150:
+            self.rect.x = radius*math.cos(angle)+radius+x
+            self.rect.y = radius*math.sin(angle)+y
+        elif self.rect.x == 2*radius+250:
+            self.y_offset=self.y_offset*-1
+       
 ##for x in range(0,600,100):
 ##    enemy_object=Enemy()
 ##    enemy_object.rect.x=x
@@ -308,7 +300,8 @@ while not done:
         enemy_object.rect.y=600
         allSprites.add(enemy_object)
         enemy_group.add(enemy_object)
-    
+
+
  
     # If you want a background image, replace this clear with blit'ing the
     # background image.
@@ -318,7 +311,13 @@ while not done:
     allSprites.draw(screen)
     allSprites.update()
     for thing in enemy_group:
-        thing.update_Turn180()
+        thing.update_Turn180(angle)
+        if thing.rect.y == 150:
+            angle += 1
+            for thing in enemy_group:
+                thing.update_Turn180(angle)
+    
+        
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
  
