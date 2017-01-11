@@ -48,6 +48,18 @@ playerdead = False
 bgtime=0
 time=0
 b1 = "background.png"
+game_start = False
+
+
+
+# --- background music
+pygame.mixer.music.load("level1.mp3")
+pygame.mixer.music.play(-1)
+
+
+# --- background image
+back = pygame.image.load(b1).convert()
+back2 = pygame.image.load(b1).convert()
 
 ##class background(pygame.sprite.Sprite):
 ##    def __init__(self):
@@ -58,18 +70,6 @@ b1 = "background.png"
 ##    def update_Up(self):
 ##        self.rect.y+=1
 
-# --- background music
-##pygame.mixer.music.load("level1.mp3")
-##pygame.mixer.music.play(-1)
-
-
-# --- background image
-back = pygame.image.load(b1).convert()
-back2 = pygame.image.load(b1).convert()
-
-
-##    def update(self):
-        
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -203,7 +203,7 @@ class Bullet(pygame.sprite.Sprite):
         self.x_speed = 0
         self.y_speed = -8
         self.dmg = 1
-        self.gap = 16
+        self.gap = 1
     def update(self):
         self.rect.x += self.x_speed
         self.rect.y += self.y_speed
@@ -218,9 +218,9 @@ class Bullet(pygame.sprite.Sprite):
 ##
 ##    def checkcollision(self,x_speed,y_speed):
         
-    def levelup(self,gap):
+    def levelup(self):
         if self.gap > 4:
-            gap -= 4
+            self.gap -= 4
 
         
 class Enemy(pygame.sprite.Sprite):
@@ -233,11 +233,11 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.x_offset=-2
         self.y_offset=-2
-        self.score = 0
+        self.score = 10
         self.angle = 3.1415926535898*50
         self.radius = 100
         self.hp = 0
-        self.crash_dmg = 40
+        self.crash_dmg = 20
         #pygame.draw.ellipse(self.image, WHITE, [-28,-33, 90, 90])
         #self.image.set_colorkey(WHITE)
 
@@ -323,11 +323,6 @@ p_bullet_group = pygame.sprite.Group()
 ##allSprites.add(background1)
 
 
-
-
-
-        
-       
 ##for x in range(0,600,100):
 ##    enemy_object=Enemy()
 ##    enemy_object.rect.x=x
@@ -336,27 +331,45 @@ p_bullet_group = pygame.sprite.Group()
 ##    enemy_group.add(enemy_object)
 ##
 
-
-
-score=0
  
 # Loop until the user clicks the close button.
 done = False
  
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
+
+
 # -------- Main Program Loop ------------------- Main Program Loop ------------------- Main Program Loop ----------
-end = False
+
+
+
 while not done:
+
+
     
+    while game_start == False:
+        screen.fill(BLACK)
+        myfont = pygame.font.SysFont('freesansbold.ttf',80)
+        instrucfont = pygame.font.SysFont('freesansbold.ttf',50)
+        nlabel = myfont.render('Press R to start',2, L_GREEN)
+        instruction_1 = instrucfont.render('Press arrow key to move',1,WHITE)
+        instruction_2 = instrucfont.render('Press Z to shoot',1,WHITE)
+        screen.blit(nlabel,(150,230))
+        screen.blit(instruction_1,(60,700))
+        screen.blit(instruction_2,(60,750))
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    game_start = True
+
+
+                    
     pygame.display.flip()
     # --- Main event loop
     for event in pygame.event.get(): # User did something
         if event.type == pygame.QUIT: # If user clicked close
             done = True # Flag that we are done so we exit this loop
-
-
-
 
  
     # --- Game logic should go here
@@ -377,6 +390,7 @@ while not done:
     if time%30==0 and time%3000 > 1000 and time%3000 < 2000:
         enemy2=Enemy()
         enemy2.hp=1
+        enemy2.crash_dmg = 40
         enemy2.y_offset=-5
         enemy2.rect.x=random.randint(10,690)
         enemy2.rect.y=0
@@ -389,6 +403,7 @@ while not done:
         enemy3.rect.y=900
         allSprites.add(enemy3)
         enemy3_group.add(enemy3)
+        
     # --- Enemy Update
     for enemy in enemy1_group:
         enemy.update_180()
@@ -400,7 +415,7 @@ while not done:
     # --- Player control limit
     if player.rect.x<1:
         player.rect.x=1
-    elif player.rect.x>638:
+    elif player.rect.x>640:
         player.rect.x=640
 
     if player.rect.y<1:
@@ -436,7 +451,13 @@ while not done:
     enemy2_hit_player = pygame.sprite.groupcollide(hitbox_group,enemy2_group,False,True)
     enemy3_hit_player = pygame.sprite.groupcollide(hitbox_group,enemy3_group,False,True)
 
+    for hitbox in enemy1_hit_player:
+        player.hp -= enemy.crash_dmg
+
     for hitbox in enemy2_hit_player:
+        player.hp -= enemy2.crash_dmg
+
+    for hitbox in enemy3_hit_player:
         player.hp -= enemy.crash_dmg
 
         
@@ -480,16 +501,28 @@ while not done:
     if player.hp <= 0:
         player.live -= 1
         player.hp = 100
+        player.score -= 200
+##        bullet.gap = 16
 
     if player.live <= 0:
-        player_dead = True
+         player_dead = True
 
-    # --- All testing code
-    print(player.hp)
-    print(player.live)
+##    # --- Level up due to score
+##    if player.score % 20 == 0 and player.score > 0:
+##        bullet.levelup()
+##        print(bullet.gap)
+
+    # --- Blit screens
+    p_score = instrucfont.render('Score:'+str(player.score),1,N_BLUE)
+    p_live = instrucfont.render('Live:'+str(player.live),1,N_BLUE)
+    p_hp = instrucfont.render('HP:'+str(player.hp)+'/100',1,N_BLUE)
+
+    # --- All debugging code
+##    print(player.hp)
+##    print(player.live)
     
     # --- Screen-clearing code goes here
-    screen.fill(WHITE)
+    screen.fill(BLACK)
     # Here, we clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     
@@ -513,9 +546,18 @@ while not done:
  
     # --- Drawing code should go here
 
-    # --- Background scrolling
+            # --- Background scrolling
     screen.blit(back, (0,bgtime))
     screen.blit(back, (0,bgtime-900))
+
+    
+    screen.blit(p_score,(25,860))
+    screen.blit(p_hp,(300,860))
+    screen.blit(p_live,(590,860))
+    
+
+
+    
 
 ##    background1=background()
 ##    background1.scroll(0,1)
